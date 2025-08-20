@@ -12,15 +12,32 @@
     font-family: Arial, sans-serif;
   }
 
+  /* Pravo srce */
   #heart {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 200px;
-    height: 200px;
-    background-color: red;
-    clip-path: polygon(50% 0%, 61% 7%, 75% 25%, 50% 50%, 25% 25%, 39% 7%);
-    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 100px;
+    height: 100px;
+    background: red;
+    transform: translate(-50%, -50%);
+  }
+  #heart::before,
+  #heart::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: red;
+    border-radius: 50%;
+  }
+  #heart::before {
+    top: -50px;
+    left: 0;
+  }
+  #heart::after {
+    left: 50px;
+    top: 0;
   }
 
   #text {
@@ -61,7 +78,7 @@ function pulseHeart() {
     scale -= 0.01;
     if (scale <= 1) growing = true;
   }
-  heart.style.transform = `translate(-50%, -50%) rotate(-45deg) scale(${scale})`;
+  heart.style.transform = `translate(-50%, -50%) scale(${scale})`;
   requestAnimationFrame(pulseHeart);
 }
 pulseHeart();
