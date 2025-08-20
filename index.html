@@ -12,39 +12,18 @@
     font-family: Arial, sans-serif;
   }
 
-  /* Pravo srce */
-  #heart {
+  #heart-svg {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 100px;
-    height: 90px;
-    transform: translate(-50%, -50%) rotate(-45deg);
-  }
-
-  #heart::before,
-  #heart::after {
-    content: "";
-    position: absolute;
-    width: 100px;
-    height: 90px;
-    background: red;
-    border-radius: 50%;
-  }
-
-  #heart::before {
-    top: -45px;
-    left: 0;
-  }
-
-  #heart::after {
-    top: 0;
-    left: 45px;
+    width: 150px;
+    height: 150px;
+    transform: translate(-50%, -50%);
   }
 
   #text {
     position: absolute;
-    top: 60%;
+    top: 65%;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2em;
@@ -61,11 +40,17 @@
 </style>
 </head>
 <body>
-<div id="heart"></div>
+
+<!-- SVG srce -->
+<svg id="heart-svg" viewBox="0 0 32 29.6">
+  <path d="M23.6,0c-2.6,0-5,1.5-6.6,3.8C15.4,1.5,13,0,10.4,0C4.7,0,0,4.7,0,10.4c0,6.6,6.7,11.6,16,19.2
+  c9.3-7.6,16-12.6,16-19.2C32,4.7,27.3,0,23.6,0z" fill="red"/>
+</svg>
+
 <div id="text">Volim te ❤️</div>
 
 <script>
-const heart = document.getElementById('heart');
+const heart = document.getElementById('heart-svg');
 const text = document.getElementById('text');
 
 // 1. Pulsiranje srca
@@ -80,7 +65,7 @@ function pulseHeart() {
     scale -= 0.01;
     if (scale <= 1) growing = true;
   }
-  heart.style.transform = `translate(-50%, -50%) rotate(-45deg) scale(${scale})`;
+  heart.style.transform = `translate(-50%, -50%) scale(${scale})`;
   requestAnimationFrame(pulseHeart);
 }
 pulseHeart();
