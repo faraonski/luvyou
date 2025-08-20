@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Volim te ❤️</title>
 <style>
   body {
@@ -13,13 +13,13 @@
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
   }
-
   @keyframes gradientBG {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
   }
 
+  /* Srce (SVG centrirano) */
   #heart-svg {
     position: absolute;
     top: 50%;
@@ -29,6 +29,7 @@
     transform: translate(-50%, -50%);
   }
 
+  /* Tekst ispod srca – ovdje idu KOMPLIMENTI koji se mijenjaju */
   #text {
     position: absolute;
     top: 65%;
@@ -38,8 +39,13 @@
     font-weight: bold;
     color: black;
     opacity: 0;
+    transition: opacity .4s ease;
+    text-shadow: 0 2px 6px rgba(0,0,0,.15);
+    white-space: pre-wrap;
+    text-align: center;
   }
 
+  /* Padajuća srca */
   .heart-drop {
     position: absolute;
     font-size: 16px;
@@ -49,50 +55,67 @@
 </head>
 <body>
 
-<!-- SVG srce -->
-<svg id="heart-svg" viewBox="0 0 32 29.6">
+<!-- SVG SRCE -->
+<svg id="heart-svg" viewBox="0 0 32 29.6" aria-hidden="true">
   <path d="M23.6,0c-2.6,0-5,1.5-6.6,3.8C15.4,1.5,13,0,10.4,0C4.7,0,0,4.7,0,10.4c0,6.6,6.7,11.6,16,19.2
   c9.3-7.6,16-12.6,16-19.2C32,4.7,27.3,0,23.6,0z" fill="red"/>
 </svg>
 
+<!-- OVDJE ĆE SE TIPKATI KOMPLIMENTI -->
 <div id="text">Volim te ❤️</div>
 
 <script>
 const heart = document.getElementById('heart-svg');
-const text = document.getElementById('text');
+const text  = document.getElementById('text');
 
-// 1. Pulsiranje srca
-let scale = 1;
-let growing = true;
-
+/* 1) Pulsiranje srca */
+let scale = 1, growing = true;
 function pulseHeart() {
-  if (growing) {
-    scale += 0.01;
-    if (scale >= 1.2) growing = false;
-  } else {
-    scale -= 0.01;
-    if (scale <= 1) growing = true;
-  }
+  scale += growing ? 0.01 : -0.01;
+  if (scale >= 1.2) growing = false;
+  if (scale <= 1.0) growing = true;
   heart.style.transform = `translate(-50%, -50%) scale(${scale})`;
   requestAnimationFrame(pulseHeart);
 }
 pulseHeart();
 
-// 2. Animirani tekst "Volim te"
-let i = 0;
-let message = text.textContent;
-text.textContent = '';
-function typeText() {
-  if (i < message.length) {
-    text.textContent += message[i];
-    text.style.opacity = 1;
-    i++;
-    setTimeout(typeText, 200);
+/* 2) KOMPLIMENTI ispod srca (umjesto stalnog "Volim te ❤️") */
+const topLines = [
+  "Prelijepe oci imaš ❤️",
+  "Slatka si 💖",
+  "Vrijedna si mi 🌟",
+  "Ljepotica 😍",
+  "Tvoj osmijeh osvjetljava dan ✨",
+  "Uvijek si posebna 💕",
+  "Moja sreća si ☀️",
+  "Neodoljiva si 💓",
+  "Uljepšavaš mi dan 🌸",
+  "Najdraža si mi 😘"
+];
+
+// tipkanje teksta kao efekt
+function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+async function typeWrite(el, str, speed=70) {
+  el.style.opacity = 0;
+  await sleep(150);
+  el.textContent = "";
+  el.style.opacity = 1;
+  for (const ch of str) {
+    el.textContent += ch;
+    await sleep(speed);
   }
 }
-typeText();
 
-// 3. Kiša srca
+(async function cycleTopText(){
+  let idx = 0;
+  while (true) {
+    await typeWrite(text, topLines[idx], 70);
+    await sleep(1400); // kratka pauza prije sljedeće poruke
+    idx = (idx + 1) % topLines.length;
+  }
+})();
+
+/* 3) Kiša srca */
 const colors = ["red", "pink", "purple", "blue", "green", "yellow"];
 function createHeart() {
   const h = document.createElement('div');
@@ -105,36 +128,37 @@ function createHeart() {
   document.body.appendChild(h);
   return h;
 }
-
 function animateHearts() {
   const h = createHeart();
   let y = -20;
   const speed = 1 + Math.random() * 3;
-
   function fall() {
     y += speed;
     h.style.top = y + 'px';
-    if (y < window.innerHeight) {
-      requestAnimationFrame(fall);
-    } else {
-      h.remove();
-    }
+    if (y < window.innerHeight) requestAnimationFrame(fall);
+    else h.remove();
   }
   fall();
 }
-
 setInterval(animateHearts, 200);
 
-// 4. Random dnevne poruke
+/* 4) NASUMIČNE PORUKE DOLJE (OSTAJE KAO RANIJE) */
 const reasons = [
   "Tvoj osmijeh mi uljepša dan 💖",
+  "Ti si najljepša stvar koja mi se desila 🥹",
+  "Niko me ne razumije kao ti 👄",
+  "Najviše volim tvoje iskrene oči👀",
+  "Lijepa si i kad si ljuta💖",
   "Tvoje oči su kao svjetlost u tami ✨",
   "Uz tebe osjećam mir i sreću 🌙",
-  "Tvoj glas mi daje snagu 🎶",
+  "Ti si moj mir u haotičnom svijetu 🎶",
   "Svaki trenutak s tobom je poseban 🌸",
-  "Volim način na koji me gledaš 😍"
+  "Prelijepa si i kad to ne vidiš 😍",
+  "Uz tebe vrijeme stane☺️",
+  "Tvoj osmijeh mi je lijek za sve🥰",
+  "Ti si moja najveća sreća🥵",
+  "Ti si moj najdraži san🤤",
 ];
-
 const reasonDiv = document.createElement('div');
 reasonDiv.style.position = 'absolute';
 reasonDiv.style.bottom = '20px';
@@ -143,6 +167,8 @@ reasonDiv.style.transform = 'translateX(-50%)';
 reasonDiv.style.fontSize = '1.5em';
 reasonDiv.style.fontWeight = 'bold';
 reasonDiv.style.color = 'black';
+reasonDiv.style.textShadow = '0 2px 6px rgba(0,0,0,.15)';
+reasonDiv.style.textAlign = 'center';
 document.body.appendChild(reasonDiv);
 
 function showRandomReason() {
@@ -152,33 +178,29 @@ function showRandomReason() {
 showRandomReason();
 setInterval(showRandomReason, 5000);
 
-// 5. Klik interakcija — eksplozija srca
+/* 5) Klik – eksplozija srca */
 document.body.addEventListener('click', (e) => {
   for (let i = 0; i < 20; i++) {
     const h = document.createElement('div');
     h.classList.add('heart-drop');
     h.textContent = '❤️';
     h.style.left = e.clientX + (Math.random() * 100 - 50) + 'px';
-    h.style.top = e.clientY + (Math.random() * 100 - 50) + 'px';
+    h.style.top  = e.clientY + (Math.random() * 100 - 50) + 'px';
     h.style.color = colors[Math.floor(Math.random() * colors.length)];
     h.style.fontSize = (10 + Math.random() * 20) + 'px';
     document.body.appendChild(h);
 
-    let y = parseInt(h.style.top);
-    let x = parseInt(h.style.left);
+    let y = parseInt(h.style.top, 10);
+    let x = parseInt(h.style.left, 10);
     const speedY = Math.random() * 3 + 1;
     const speedX = (Math.random() - 0.5) * 4;
 
     function fly() {
-      y += speedY;
-      x += speedX;
+      y += speedY; x += speedX;
       h.style.top = y + 'px';
       h.style.left = x + 'px';
-      if (y < window.innerHeight + 50) {
-        requestAnimationFrame(fly);
-      } else {
-        h.remove();
-      }
+      if (y < window.innerHeight + 50) requestAnimationFrame(fly);
+      else h.remove();
     }
     fly();
   }
@@ -187,4 +209,3 @@ document.body.addEventListener('click', (e) => {
 
 </body>
 </html>
-
