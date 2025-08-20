@@ -18,26 +18,28 @@
     top: 50%;
     left: 50%;
     width: 100px;
-    height: 100px;
-    background: red;
-    transform: translate(-50%, -50%);
+    height: 90px;
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
+
   #heart::before,
   #heart::after {
     content: "";
     position: absolute;
     width: 100px;
-    height: 100px;
+    height: 90px;
     background: red;
     border-radius: 50%;
   }
+
   #heart::before {
-    top: -50px;
+    top: -45px;
     left: 0;
   }
+
   #heart::after {
-    left: 50px;
     top: 0;
+    left: 45px;
   }
 
   #text {
@@ -78,7 +80,7 @@ function pulseHeart() {
     scale -= 0.01;
     if (scale <= 1) growing = true;
   }
-  heart.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  heart.style.transform = `translate(-50%, -50%) rotate(-45deg) scale(${scale})`;
   requestAnimationFrame(pulseHeart);
 }
 pulseHeart();
