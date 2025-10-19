@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Volim te ❤️</title>
+<title>Love You ❤️</title>
 <style>
   body {
     margin: 0;
@@ -19,7 +19,6 @@
     100% {background-position: 0% 50%;}
   }
 
-  /* Srce (SVG centrirano) */
   #heart-svg {
     position: absolute;
     top: 50%;
@@ -29,7 +28,6 @@
     transform: translate(-50%, -50%);
   }
 
-  /* Tekst ispod srca – ovdje idu KOMPLIMENTI koji se mijenjaju */
   #text {
     position: absolute;
     top: 65%;
@@ -45,15 +43,109 @@
     text-align: center;
   }
 
-  /* Padajuća srca */
   .heart-drop {
     position: absolute;
     font-size: 16px;
     pointer-events: none;
   }
+
+  #feedback-container {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-size: 1.2em;
+    background: rgba(255,255,255,0.6);
+    padding: 10px 20px;
+    border-radius: 15px;
+  }
+
+  #toggleSlider {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    padding: 8px 15px;
+    font-size: 1em;
+    border-radius: 10px;
+    cursor: pointer;
+  }
 </style>
 </head>
 <body>
+  <!-- Shortcut dugme negdje na glavnoj stranici -->
+<button id="music-shortcut" style="position:absolute; top:calc(70% + 20px); left:50%; transform:translateX(-50%); padding:10px 20px; font-size:16px; cursor:pointer;">🎵 Muzika</button>
+
+
+<!-- Audio tag -->
+<audio id="song"></audio>
+
+<script>
+const musicShortcut = document.getElementById('music-shortcut');
+const audio = document.getElementById('song');
+
+const refreni = [
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
+];
+
+musicShortcut.addEventListener('click', () => {
+  // Očisti cijelu stranicu
+  document.body.innerHTML = '';
+
+  // Kreiraj novi div za muziku
+  const musicDiv = document.createElement('div');
+  musicDiv.style.width = '100vw';
+  musicDiv.style.height = '100vh';
+  musicDiv.style.display = 'flex';
+  musicDiv.style.flexDirection = 'column';
+  musicDiv.style.justifyContent = 'center';
+  musicDiv.style.alignItems = 'center';
+  musicDiv.style.background = 'linear-gradient(-45deg, #ff9a9e, #fad0c4, #fad0c4, #ff9a9e)';
+  musicDiv.style.backgroundSize = '400% 400%';
+  musicDiv.style.animation = 'gradientBG 15s ease infinite';
+  document.body.appendChild(musicDiv);
+
+  // Naslov
+  const title = document.createElement('h1');
+  title.textContent = '🎵 Pusti refren!';
+  title.style.color = 'white';
+  title.style.marginBottom = '30px';
+  musicDiv.appendChild(title);
+
+  // Play/Pause dugme
+  const playBtn = document.createElement('button');
+  playBtn.textContent = 'Play / Pause';
+  playBtn.style.fontSize = '20px';
+  playBtn.style.padding = '10px 20px';
+  playBtn.style.cursor = 'pointer';
+  musicDiv.appendChild(playBtn);
+
+  // Pustimo random pjesmu odmah
+  const r = refreni[Math.floor(Math.random() * refreni.length)];
+  audio.src = r;
+  audio.play();
+
+  playBtn.addEventListener('click', () => {
+    if (audio.paused) audio.play();
+    else audio.pause();
+  });
+
+});
+
+// Animacija backgrounda (isto kao kod glavne stranice)
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes gradientBG {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}`;
+document.head.appendChild(style);
+</script>
+
 
 <!-- SVG SRCE -->
 <svg id="heart-svg" viewBox="0 0 32 29.6" aria-hidden="true">
@@ -61,14 +153,28 @@
   c9.3-7.6,16-12.6,16-19.2C32,4.7,27.3,0,23.6,0z" fill="red"/>
 </svg>
 
-<!-- OVDJE ĆE SE TIPKATI KOMPLIMENTI -->
-<div id="text">Volim te ❤️</div>
+<!-- Komplimenti -->
+<div id="text">Love you ❤️</div>
+
+<!-- Slider iznad srca -->
+<div id="feedback-container">
+  <label for="loveSlider">How much do you love me today? ❤️</label><br>
+  <input type="range" id="loveSlider" min="0" max="10" value="5">
+  <span id="loveValue">5</span>/10
+</div>
+
+<!-- Shortcut dugme -->
+<button id="toggleSlider">❤️ Slider</button>
 
 <script>
 const heart = document.getElementById('heart-svg');
 const text  = document.getElementById('text');
+const loveSlider = document.getElementById('loveSlider');
+const loveValue = document.getElementById('loveValue');
+const sliderContainer = document.getElementById('feedback-container');
+const toggleBtn = document.getElementById('toggleSlider');
 
-/* 1) Pulsiranje srca */
+/* Pulsiranje srca */
 let scale = 1, growing = true;
 function pulseHeart() {
   scale += growing ? 0.01 : -0.01;
@@ -79,21 +185,19 @@ function pulseHeart() {
 }
 pulseHeart();
 
-/* 2) KOMPLIMENTI ispod srca (umjesto stalnog "Volim te ❤️") */
+/* Komplimenti ispod srca */
 const topLines = [
-  "Prelijepe oci imaš ❤️",
-  "Slatka si 💖",
-  "Vrijedna si mi 🌟",
-  "Ljepotica 😍",
-  "Tvoj osmijeh osvjetljava dan ✨",
-  "Uvijek si posebna 💕",
-  "Moja sreća si ☀️",
-  "Neodoljiva si 💓",
-  "Uljepšavaš mi dan 🌸",
-  "Najdraža si mi 😘"
+  "You have beautiful eyes ❤️",
+  "You are cute💖",
+  "You are valuable to me 🌟",
+  "Beauty 😍",
+  "Your smile brightens the day ✨",
+  "My love 💕",
+  "Nice hair today ☀️",
+  "ur cute 💓",
+  "Making my day sweet 🌸",
+  "My favv 😘"
 ];
-
-// tipkanje teksta kao efekt
 function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
 async function typeWrite(el, str, speed=70) {
   el.style.opacity = 0;
@@ -105,17 +209,16 @@ async function typeWrite(el, str, speed=70) {
     await sleep(speed);
   }
 }
-
 (async function cycleTopText(){
   let idx = 0;
   while (true) {
     await typeWrite(text, topLines[idx], 70);
-    await sleep(1400); // kratka pauza prije sljedeće poruke
+    await sleep(1400);
     idx = (idx + 1) % topLines.length;
   }
 })();
 
-/* 3) Kiša srca */
+/* Kiša srca */
 const colors = ["red", "pink", "purple", "blue", "green", "yellow"];
 function createHeart() {
   const h = document.createElement('div');
@@ -142,22 +245,22 @@ function animateHearts() {
 }
 setInterval(animateHearts, 200);
 
-/* 4) NASUMIČNE PORUKE DOLJE (OSTAJE KAO RANIJE) */
+/* Nasumične poruke dolje */
 const reasons = [
-  "Tvoj osmijeh mi uljepša dan 💖",
-  "Ti si najljepša stvar koja mi se desila 🥹",
-  "Niko me ne razumije kao ti 👄",
-  "Najviše volim tvoje iskrene oči👀",
-  "Lijepa si i kad si ljuta💖",
-  "Tvoje oči su kao svjetlost u tami ✨",
-  "Uz tebe osjećam mir i sreću 🌙",
-  "Ti si moj mir u haotičnom svijetu 🎶",
-  "Svaki trenutak s tobom je poseban 🌸",
-  "Prelijepa si i kad to ne vidiš 😍",
-  "Uz tebe vrijeme stane☺️",
-  "Tvoj osmijeh mi je lijek za sve🥰",
-  "Ti si moja najveća sreća🥵",
-  "Ti si moj najdraži san🤤",
+  "Your smile brightens my day 💖",
+"You are the most beautiful thing that has ever happened to me 🥹",
+"No one understands me like you 👄",
+"I love your sincere eyes the most👀",
+"You are beautiful even when you are angry💖",
+"Your eyes are like light in the darkness ✨",
+"With you I feel peace and happiness 🌙",
+"You are my peace in a chaotic world 🎶",
+"Every moment with you is special 🌸",
+"You are beautiful even when you don't see it 😍",
+"With you, time stands still☺️",
+"Your smile is my cure for everything🥰",
+"You are my greatest happiness🥵",
+"You are my dearest dream🤤",
 ];
 const reasonDiv = document.createElement('div');
 reasonDiv.style.position = 'absolute';
@@ -170,7 +273,6 @@ reasonDiv.style.color = 'black';
 reasonDiv.style.textShadow = '0 2px 6px rgba(0,0,0,.15)';
 reasonDiv.style.textAlign = 'center';
 document.body.appendChild(reasonDiv);
-
 function showRandomReason() {
   const r = reasons[Math.floor(Math.random() * reasons.length)];
   reasonDiv.textContent = r;
@@ -178,7 +280,7 @@ function showRandomReason() {
 showRandomReason();
 setInterval(showRandomReason, 5000);
 
-/* 5) Klik – eksplozija srca */
+/* Klik – eksplozija srca */
 document.body.addEventListener('click', (e) => {
   for (let i = 0; i < 20; i++) {
     const h = document.createElement('div');
@@ -189,23 +291,58 @@ document.body.addEventListener('click', (e) => {
     h.style.color = colors[Math.floor(Math.random() * colors.length)];
     h.style.fontSize = (10 + Math.random() * 20) + 'px';
     document.body.appendChild(h);
-
     let y = parseInt(h.style.top, 10);
     let x = parseInt(h.style.left, 10);
     const speedY = Math.random() * 3 + 1;
     const speedX = (Math.random() - 0.5) * 4;
-
-    function fly() {
-      y += speedY; x += speedX;
-      h.style.top = y + 'px';
-      h.style.left = x + 'px';
-      if (y < window.innerHeight + 50) requestAnimationFrame(fly);
-      else h.remove();
-    }
+    function fly() { y += speedY; x += speedX; h.style.top = y + 'px'; h.style.left = x + 'px'; if (y < window.innerHeight + 50) requestAnimationFrame(fly); else h.remove(); }
     fly();
   }
 });
+
+/* Slider – prikaz vrijednosti i shortcut dugme */
+loveSlider.addEventListener('input', () => {
+  loveValue.textContent = loveSlider.value;
+});
+
+toggleBtn.addEventListener('click', ()=>{
+  if(sliderContainer.style.display === 'none') sliderContainer.style.display = 'block';
+  else sliderContainer.style.display = 'none';
+});
+
+// Feedback tekstovi za svaki broj slidera
+const loveFeedback = {
+0: "Uh... so bad 😅",
+1: "You're a bit stingy with love 😢",
+2: "Hmm, it could be better 😕",
+3: "Still a bit cold 😐",
+4: "Ok, but it could be better 😌",
+5: "Average, but enough to make me happy 😄",
+6: "Beautiful, I feel the love 💖",
+7: "So beautiful, my heart melts 🥰",
+8: "Awesome, I feel so much love 😍",
+9: "Oooo, this is almost perfect 🫶",
+10: "Wow! Love to the max! ❤️🔥"
+};
+
+// Kada slider promijeni vrijednost, prikazuje se feedback
+loveSlider.addEventListener('input', () => {
+  const value = loveSlider.value;
+  loveValue.textContent = value;
+  // Prikaži feedback ispod slidera
+  let feedbackEl = document.getElementById('loveFeedback');
+  if (!feedbackEl) {
+    feedbackEl = document.createElement('div');
+    feedbackEl.id = 'loveFeedback';
+    feedbackEl.style.marginTop = '10px';
+    feedbackEl.style.fontWeight = 'bold';
+    sliderContainer.appendChild(feedbackEl);
+  }
+  feedbackEl.textContent = loveFeedback[value];
+});
+
 </script>
+
 
 </body>
 </html>
